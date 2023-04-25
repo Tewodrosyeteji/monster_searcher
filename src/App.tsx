@@ -1,18 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import "./App.css";
 // import React, { Component } from "react";
 import CardList from "./components/card-list/card-list";
 import Search from "./components/search/search";
+import { getData } from "./utils/data.utils";
 
+export type monsterArray = {
+  id: string;
+  name: string;
+  email: string;
+};
 const App = () => {
   const [searchFiled, setSearchFiled] = useState("");
-  const [monsters, setMonsters] = useState([]);
+  const [monsters, setMonsters] = useState<monsterArray[]>([]);
   const [filteredMonster, setFilteredMonster] = useState(monsters);
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.json())
-      .then((users) => setMonsters(users));
+    // const fetchUser= async getData<monserArray[]>("https://jsonplaceholder.typicode.com/users")
+    const fetchuser = async () => {
+      const users = await getData<monsterArray[]>(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      setMonsters(users);
+    };
+    fetchuser();
   }, []);
 
   useEffect(() => {
@@ -22,7 +33,7 @@ const App = () => {
     setFilteredMonster(newfilteredMonster);
   }, [monsters, searchFiled]);
 
-  const searchChangeHandler = (event) => {
+  const searchChangeHandler = (event: ChangeEvent<HTMLInputElement>): void => {
     const searchString = event.target.value.toLocaleLowerCase();
     setSearchFiled(searchString);
   };
@@ -31,7 +42,7 @@ const App = () => {
     <div className="App">
       <h1 className="app-title"> Monster Search</h1>
       <Search
-        type="search"
+        className="monsters-search-box"
         placeholder="search monster"
         changed={searchChangeHandler}
       />
